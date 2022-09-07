@@ -21,7 +21,7 @@ export const InputWrapper = styled.div`
 
 export const Input = styled.input`
     font-size: 20px;
-    width: 315px;
+    width: 80%;
     margin: 0 20px;
 `;
 

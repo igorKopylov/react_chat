@@ -29,7 +29,7 @@ const Chats: FC = () => {
     onSnapshot(q, querySnapshot => {
       const messages: Message[] = []
       querySnapshot.forEach((message: any) => {
-        messages.push(message.data())
+        messages.push({ ...message.data() })
       })
       dispatch(setMessages(messages))
     })

@@ -39,7 +39,7 @@ const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index })
             <S.MainInfo>
                 <S.UserName>{user.name}</S.UserName>
                 <S.LastMessage>
-                    {lastMessage?.text.length > 10 ? `${lastMessage?.text.substring(0, 38)}...` : lastMessage?.text}
+                    {lastMessage?.text.length > 38 ? `${lastMessage?.text.substring(0, 38)}...` : lastMessage?.text}
                 </S.LastMessage>
             </S.MainInfo>
             <S.UnreadMessages>

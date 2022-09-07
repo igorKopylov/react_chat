@@ -5,7 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../../firebase';
 import { useSelector } from 'react-redux';
 import { chatSelector } from '../../redux/chat/slice';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { Message as MessageType } from '../../redux/chat/types';
 
 type MessageProps = {
@@ -15,34 +15,24 @@ type MessageProps = {
 const Message: FC<MessageProps> = ({ message }) => {
     const [user] = useAuthState(auth)
     const isOwnMessage = message.uid === user?.uid
-    const [coords, setCoords] = useState<{ x: number, y: number } | null>(null)
-    const [isPopup, setIsPopup] = useState(false)
     const avatarSize = message.avatar.size
     const messageRef = useRef<HTMLDivElement>(null)
+    const messageDate = new Date(message.createdAt?.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })
 
     useEffect(() => {
         messageRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [message])
 
-    const showPopup = (event: MouseEvent) => {
-        setCoords({ x: event.clientX, y: event.clientY })
-    }
-    console.log(coords)
-
     return (
-        <S.Container onMouseDown={(e: MouseEvent) => showPopup(e)} ref={messageRef} isOwnMessage={isOwnMessage}>
-            {
-                isPopup && (
-                    <S.Popup coords={coords}>
-                        d
-                    </S.Popup>
-                )
-            }
+        <S.Container ref={messageRef} isOwnMessage={isOwnMessage}>
             <S.Avatar isOwnMessage={isOwnMessage}>
                 <img src={message.avatar.url || person} width={avatarSize} height={avatarSize} alt='avatar' />
             </S.Avatar>
-            <S.Time isOwnMessage={isOwnMessage}>9:00 AM</S.Time>
+            <S.Time isOwnMessage={isOwnMessage}>{messageDate}</S.Time>
             <S.Message isOwnMessage={isOwnMessage}>
+                {
+                    message.media && <img width={280} src={message.media} alt='image' />
+                }
                 {message.text}
             </S.Message>
         </S.Container>

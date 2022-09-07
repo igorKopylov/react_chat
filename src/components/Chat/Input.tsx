@@ -1,22 +1,22 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import React, { useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useSelector } from 'react-redux';
-import { auth, db } from '../../firebase';
+import { auth, db, storage } from '../../firebase';
 import { chatSelector } from '../../redux/chat/slice';
 import * as S from '../../styles/components/Chat/Input';
 import cross from '../../assets/cross.svg';
 import airplane from '../../assets/airplane.svg';
 import upload from '../../assets/upload.svg';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const Input = () => {
+    const { chat, profile } = useSelector(chatSelector)
     const [user] = useAuthState(auth)
     const [text, setText] = useState('')
-    const [file, setFile] = useState('')
+    const [file, setFile] = useState<any>(null)
     const [imageUrl, setImageUrl] = useState('')
-    const { chat, profile } = useSelector(chatSelector)
     const inputRef = useRef<HTMLInputElement>(null)
-    const loggedUserUid = user?.uid
 
     const onClickCross = () => {
         setText('')
@@ -26,26 +26,50 @@ const Input = () => {
     const sendMessage = async () => {
         if (!text) return
         setText('')
-        const chatUid = chat!.uid
-        const id = loggedUserUid && loggedUserUid > chatUid ? `${loggedUserUid + chatUid}` : `${chatUid + loggedUserUid}`
+        const user1 = user!.uid
+        const user2 = chat!.uid
+        const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
         const data = await addDoc(collection(db, 'messages', id, 'chat'), {
             text,
             avatar: { url: profile?.avatar.url, size: profile!.avatar.size - 80 },
+            media: imageUrl ? imageUrl : null,
             createdAt: serverTimestamp(),
             uid: user?.uid
         })
-        await setDoc(doc(db, 'lastMessage', id), {
-            text,
-        })
+        await setDoc(doc(db, 'lastMessage', id), { text })
         return data
     }
-    console.log(file)
+
+    useEffect(() => {
+        const onPressEnter = (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                sendMessage()
+            }
+        }
+        document.body.addEventListener('keydown', onPressEnter)
+        return () => document.body.removeEventListener('keydown', onPressEnter)
+    }, [text])
+
+    const selectFile = async () => {
+        if (!file) return
+        const user1 = user!.uid
+        const user2 = chat!.uid
+        const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
+        const imageRef = ref(storage, `avatars/${file.name}_${id}`)
+        const uploadTask = await uploadBytes(imageRef, file)
+        const imageUrl = await getDownloadURL(ref(storage, uploadTask.ref.fullPath))
+        setImageUrl(imageUrl)
+    }
+
+    useEffect(() => {
+        selectFile()
+    }, [file])
 
     return (
         <S.Container>
             <label>
-                <img style={{ cursor: 'pointer  ' }} width={35} height={35} src={upload} alt='upload file' />
-                <input style={{ display: 'none' }} type='file' value={file} onChange={e => setFile(e.target.value)} />
+                <img style={{ cursor: 'pointer' }} width={35} height={35} src={upload} alt='upload file' />
+                <input style={{ display: 'none' }} type='file' onChange={(e: any) => setFile(e.target.files[0])} />
             </label>
             <S.InputWrapper>
                 <S.Input ref={inputRef} value={text} onChange={e => setText(e.target.value)} placeholder='enter message...' />
