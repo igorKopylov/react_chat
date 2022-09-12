@@ -20,11 +20,12 @@ export const Loupe = styled.img`
 `;
 
 export const Input = styled.input`
-    width: 75%;
+    width: 70%;
     height: 30px;
     background: none;
     font-size: 18px;
     color: #fff;
+    margin-right: 10px;
     letter-spacing: 1.5px;
 
     &::placeholder {

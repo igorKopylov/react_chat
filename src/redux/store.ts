@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import chatSlice from './chat/slice';
+import sidebarSlice from './sidebar/slice'
 import { persistStore, persistReducer, } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const reducer = combineReducers({
-    chatSlice
+    chatSlice,
+    sidebarSlice
 })
 
 const persistConfig = {

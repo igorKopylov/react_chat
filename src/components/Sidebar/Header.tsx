@@ -8,7 +8,8 @@ import profile from '../../assets/profile.svg';
 import logOutImage from '../../assets/logOut.svg';
 import { CSSTransition } from 'react-transition-group';
 import { useAppDispatch } from '../../redux/store';
-import { setChat, setIsModal, setProfile } from '../../redux/chat/slice';
+import { setChat, setProfile } from '../../redux/chat/slice';
+import { setIsModal } from '../../redux/sidebar/slice';
 
 const Header = () => {
     const [isPopup, setIsPopup] = useState(false)

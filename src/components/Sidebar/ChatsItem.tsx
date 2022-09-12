@@ -17,19 +17,16 @@ type ChatsItemProps = {
 
 const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index }) => {
     const { profile } = useSelector(chatSelector)
-    const [lastMessage, setLastMessage] = useState<any>(null)
-    const [user2] = useAuthState(auth)
-    const loggedUserUid = user2?.uid
+    const [lastMessage, setLastMessage] = useState('')
+    const [authUser] = useAuthState(auth)
     const avatarSize = user.avatar.size - 65
+    const user1 = authUser?.uid
+    const user2 = user!.uid
+    const id = user1 && user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
 
-    useEffect(() => {
-        const chatUid = user?.uid
-        const id = loggedUserUid && chatUid && loggedUserUid > chatUid ? `${loggedUserUid + chatUid}` : `${chatUid + loggedUserUid}`
-        const getLastMessage = onSnapshot(doc(db, 'lastMessage', id), doc => {
-            setLastMessage(doc.data())
-        })
-        return () => getLastMessage()
-    }, [])
+    onSnapshot(doc(db, 'lastMessage', id), doc => {
+        setLastMessage(doc.data()?.text)
+    })
 
     return (
         <S.Container isSelected={isSelected} onClick={() => onClickChat(user, index)}>
@@ -39,7 +36,7 @@ const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index })
             <S.MainInfo>
                 <S.UserName>{user.name}</S.UserName>
                 <S.LastMessage>
-                    {lastMessage?.text.length > 38 ? `${lastMessage?.text.substring(0, 38)}...` : lastMessage?.text}
+                    {lastMessage?.length > 38 ? `${lastMessage.slice(0, 31)}...` : lastMessage}
                 </S.LastMessage>
             </S.MainInfo>
             <S.UnreadMessages>

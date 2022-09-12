@@ -6,7 +6,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import cross from '../assets/cross.svg';
 import person from '../assets/person.svg';
 import { useAppDispatch } from '../redux/store';
-import { chatSelector, setIsModal, setProfile } from '../redux/chat/slice';
+import { chatSelector, setProfile } from '../redux/chat/slice';
+import { setIsModal } from '../redux/sidebar/slice'
 import camera from '../assets/camera.svg';
 import { useSelector } from 'react-redux';
 import { doc, updateDoc } from 'firebase/firestore';

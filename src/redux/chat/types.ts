@@ -9,6 +9,7 @@ export type Message = {
     media: string | null;
     avatar: { url: string, size: number }
     createdAt: any;
+    id: string;
 }
 
 export type Profile = {
@@ -21,5 +22,4 @@ export interface ChatSliceState {
     chat: Chat | null;
     messages: Message[];
     profile: Profile | null
-    isModal: boolean
 }

@@ -7,8 +7,10 @@ type Coords = {
 
 export const Container = styled('div') <{ isOwnMessage: boolean }>`
     position: relative;
-    width: 360px;
-    margin-left:  ${({ isOwnMessage }) => isOwnMessage ? '45vw' : '25px'};
+    width: 400px;
+    margin-left:  ${({ isOwnMessage }) => isOwnMessage ? '42.5vw' : '25px'};
+    display: flex;
+    align-items: center;
 
     &:not(:first-child) {
         margin-top: 70px;
@@ -16,6 +18,12 @@ export const Container = styled('div') <{ isOwnMessage: boolean }>`
 
     &:first-child {
         margin-top: 40px;
+    }
+
+    &:hover {
+        .trash-can {
+            visibility: visible;
+        }
     }
 `;
 
@@ -35,7 +43,7 @@ export const Message = styled('div') <{ isOwnMessage: boolean }>`
     background-color: ${({ isOwnMessage }) => isOwnMessage ? '#0066ff' : '#ccc'};
     border-radius: ${({ isOwnMessage }) => isOwnMessage ? '7px 7px 0 7px' : '7px 7px 7px 0'};
     color: ${({ isOwnMessage }) => isOwnMessage ? '#fff' : '#000'};
-    margin-left: ${({ isOwnMessage }) => isOwnMessage ? '0' : '60px'};
+    margin-left: ${({ isOwnMessage }) => isOwnMessage ? '40px' : '60px'};
     padding: 10px;
     font-size: 24px;
 `;
@@ -55,15 +63,18 @@ export const Avatar = styled('div') <{ isOwnMessage: boolean }>`
     margin-left: 3px;
 `;
 
-export const Time = styled('div') <{ isOwnMessage: boolean }>`
+export const Time = styled('time') <{ isOwnMessage: boolean }>`
     position: absolute;
     bottom: -55px;
     right: ${({ isOwnMessage }) => isOwnMessage ? '0' : 'none'};
     font-size: 14px;
 `;
 
-export const Delete = styled.p`
+export const TrashCan = styled('img') <{ isOwnMessage: boolean }>`
+    width: 28px;
+    height: 28px;
+    visibility: hidden;
     position: absolute;
-    top: 10px;
-    right: 0;
+    right: ${({ isOwnMessage }) => isOwnMessage ? 'none' : '0'};
+    cursor: pointer
 `;
