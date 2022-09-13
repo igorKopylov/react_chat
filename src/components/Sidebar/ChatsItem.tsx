@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { chatSelector } from '../../redux/chat/slice';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
 
 type ChatsItemProps = {
     user: Profile;
@@ -16,7 +16,8 @@ type ChatsItemProps = {
 }
 
 const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index }) => {
-    const { profile } = useSelector(chatSelector)
+    const { messages: messagesFromRedux } = useSelector(chatSelector)
+    const [messages, setMessages] = useState<any>([])
     const [lastMessage, setLastMessage] = useState('')
     const [authUser] = useAuthState(auth)
     const avatarSize = user.avatar.size - 65
@@ -24,10 +25,23 @@ const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index })
     const user2 = user!.uid
     const id = user1 && user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
 
+    
+    useEffect(() => {
+        const q = query(collection(db, 'messages', id, 'chat'), orderBy('createdAt'))
+        onSnapshot(q, querySnapshot => {
+            const messages: any = []
+            querySnapshot.forEach(message => {
+                messages.push(message.data())
+            })
+            setMessages(messages)
+        })
+        messages[messages.length - 1]?.text && updateDoc(doc(db, 'lastMessage', id), {text: messages[messages.length - 1]?.text})
+        //setLastMessage(messages[messages.length - 1]?.text)
+    }, [messagesFromRedux])
+
     onSnapshot(doc(db, 'lastMessage', id), doc => {
         setLastMessage(doc.data()?.text)
     })
-
     return (
         <S.Container isSelected={isSelected} onClick={() => onClickChat(user, index)}>
             <S.ChatAvatar>
