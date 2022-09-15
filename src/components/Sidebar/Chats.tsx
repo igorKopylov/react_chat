@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { addDoc, collection, getDocs, limit, onSnapshot, orderBy, query, startAfter, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, limit, onSnapshot, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import ChatsItem from './ChatsItem';
 import { useAuthState } from 'react-firebase-hooks/auth';

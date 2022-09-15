@@ -6,7 +6,8 @@ import { useSelector } from 'react-redux';
 import { chatSelector } from '../../redux/chat/slice';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../../firebase';
-import { collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
+import { useAppDispatch } from '../../redux/store';
 
 type ChatsItemProps = {
     user: Profile;
@@ -16,10 +17,11 @@ type ChatsItemProps = {
 }
 
 const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index }) => {
-    const { messages: messagesFromRedux } = useSelector(chatSelector)
+    const { profile, messages: messagesFromRedux } = useSelector(chatSelector)
     const [messages, setMessages] = useState<any>([])
     const [lastMessage, setLastMessage] = useState('')
     const [authUser] = useAuthState(auth)
+    const dispatch = useAppDispatch()
     const avatarSize = user.avatar.size - 65
     const user1 = authUser?.uid
     const user2 = user!.uid
@@ -35,9 +37,13 @@ const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index })
             })
             setMessages(messages)
         })
-        messages[messages.length - 1]?.text && updateDoc(doc(db, 'lastMessage', id), {text: messages[messages.length - 1]?.text})
-        //setLastMessage(messages[messages.length - 1]?.text)
     }, [messagesFromRedux])
+    
+    useEffect(() => {
+        messages[messages.length - 1]?.text 
+        ? updateDoc(doc(db, 'lastMessage', id), {text: messages[messages.length - 1]?.text})
+        : deleteDoc(doc(db, 'lastMessage', id))
+    })
 
     onSnapshot(doc(db, 'lastMessage', id), doc => {
         setLastMessage(doc.data()?.text)
@@ -50,12 +56,10 @@ const ChatsItem: FC<ChatsItemProps> = ({ user, onClickChat, isSelected, index })
             <S.MainInfo>
                 <S.UserName>{user.name}</S.UserName>
                 <S.LastMessage>
-                    {lastMessage?.length > 38 ? `${lastMessage.slice(0, 31)}...` : lastMessage}
+                    {lastMessage?.length > 45 ? `${lastMessage.slice(0, 45)}...` : lastMessage}
                 </S.LastMessage>
             </S.MainInfo>
-            <S.UnreadMessages>
-                <span>2</span>
-            </S.UnreadMessages>
+            <S.UnreadMessages isOnline={user.isOnline} />
         </S.Container>
     )
 }

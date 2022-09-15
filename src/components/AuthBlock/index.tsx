@@ -5,7 +5,7 @@ import closedEye from '../../assets/closedEye.svg';
 import openedEye from '../../assets/openedEye.svg';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAppDispatch } from '../../redux/store';
 import { setProfile } from '../../redux/chat/slice';
 
@@ -36,12 +36,12 @@ const AuthBlock: FC<AuthBlockProps> = ({ step, setStep, isSignUp, setIsSignUp })
             await createUserWithEmailAndPassword(auth, email, pass)
         } else {
             const result = await signInWithEmailAndPassword(auth, email, pass)
+            await updateDoc(doc(db, 'users', result.user.uid), {isOnline: true})
             const oldProfile: any = await getDoc(doc(db, 'users', result.user.uid))
             dispatch(setProfile(oldProfile.data()))
         }
         setStep(step + 1)
     }
-
     return (
         <div>
             <S.Container>

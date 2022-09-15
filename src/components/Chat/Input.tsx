@@ -34,6 +34,7 @@ const Input = () => {
             avatar: { url: profile?.avatar.url, size: profile!.avatar.size - 80 },
             media: imageUrl ? imageUrl : null,
             createdAt: serverTimestamp(),
+            unread: true,
             uid: user?.uid
         })
         await setDoc(doc(db, 'lastMessage', id), { text })

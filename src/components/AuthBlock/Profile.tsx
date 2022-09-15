@@ -32,6 +32,7 @@ const Profile = () => {
         const newUser = {
             name,
             avatar: { size, url: avatarUrl },
+            isOnline: true,
             uid: user!.uid
         }
         const data = await setDoc(userRef, newUser)

@@ -22,7 +22,7 @@ export const Container = styled('div') <{ isOwnMessage: boolean }>`
 
     &:hover {
         .trash-can {
-            visibility: visible;
+            visibility: ${({isOwnMessage}) => isOwnMessage ? 'visible' : 'none'};
         }
     }
 `;

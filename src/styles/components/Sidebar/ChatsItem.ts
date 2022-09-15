@@ -55,13 +55,15 @@ export const UserName = styled.p`
 
 export const LastMessage = styled.p`
     font-size: 18px;
+    width: 100%;
+    word-wrap: break-word;
 `;
 
 
-export const UnreadMessages = styled.div`
-    width: 30px;
-    height: 30px;
-    background-color: #fff;
+export const UnreadMessages = styled('div')<{isOnline: boolean}>`
+    width: 25px;
+    height: 25px;
+    background-color: ${({isOnline}) => isOnline ? '#5ffa06' : '#ff3636'};
     border-radius: 50%;
     display: flex;
     align-items: center;

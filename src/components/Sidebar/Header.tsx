@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import * as S from '../../styles/components/Sidebar/Header';
 import icon from '../../assets/icon.svg';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
 import threeDots from '../../assets/threeDots.svg';
 import profile from '../../assets/profile.svg';
 import logOutImage from '../../assets/logOut.svg';
 import { CSSTransition } from 'react-transition-group';
 import { useAppDispatch } from '../../redux/store';
-import { setChat, setProfile } from '../../redux/chat/slice';
+import { chatSelector, setChat, setProfile } from '../../redux/chat/slice';
 import { setIsModal } from '../../redux/sidebar/slice';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const Header = () => {
     const [isPopup, setIsPopup] = useState(false)
+    const [user] = useAuthState(auth)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -29,7 +32,8 @@ const Header = () => {
         setIsPopup(!isPopup)
     }
 
-    const logOut = () => {
+    const logOut = async() => {
+        await updateDoc(doc(db, 'users', user!.uid), {isOnline: false})
         signOut(auth)
         dispatch(setProfile(null))
         dispatch(setChat(null))

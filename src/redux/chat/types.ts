@@ -9,13 +9,15 @@ export type Message = {
     media: string | null;
     avatar: { url: string, size: number }
     createdAt: any;
+    unread: boolean;
     id: string;
 }
 
 export type Profile = {
     name: string;
     avatar: { url: string; size: number };
-    uid: string
+    isOnline: boolean;
+    uid: string;
 }
 
 export interface ChatSliceState {
